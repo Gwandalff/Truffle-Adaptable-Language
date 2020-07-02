@@ -15,6 +15,7 @@ public final class Variable extends ModelingElement {
 		this.lowerBound  = -100;
 		this.higherBound =  100;
 		this.equilibrium =  0;
+		this.globalImpact = 0;
 	}
 	
 	public Variable(String ID, double equilibrium) {
@@ -22,6 +23,7 @@ public final class Variable extends ModelingElement {
 		this.lowerBound  = -100;
 		this.higherBound =  100;
 		this.equilibrium =  equilibrium;
+		this.globalImpact = 0;
 	}
 	
 	public Variable(String ID, double equilibrium, double lowerBound) {
@@ -29,6 +31,7 @@ public final class Variable extends ModelingElement {
 		this.lowerBound  = lowerBound;
 		this.higherBound = 100;
 		this.equilibrium = equilibrium;
+		this.globalImpact = 0;
 	}
 	
 	public Variable(String ID,double equilibrium,  double lowerBound, double higherBound) {
@@ -36,11 +39,12 @@ public final class Variable extends ModelingElement {
 		this.lowerBound  = lowerBound;
 		this.higherBound = higherBound;
 		this.equilibrium = equilibrium;
+		this.globalImpact = 0;
 	}
 	
 	@Override
 	protected Set<Variable> assessVariables(Double pathImpact) {
-		this.globalImpact += globalImpact;
+		this.globalImpact += pathImpact;
 		Set<Variable> out = new HashSet<Variable>();
 		out.add(this);
 		return out;
