@@ -1,12 +1,12 @@
 package com.oracle.truffle.adaptable.language;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.oracle.truffle.adaptable.language.decision.model.Goal;
 import com.oracle.truffle.adaptable.language.decision.model.Resource;
-import com.oracle.truffle.adaptable.language.decision.model.Softgoal;
 import com.oracle.truffle.adaptable.module.TruffleAdaptableModule;
 
 public abstract class AdaptationContext<Lang extends TruffleAdaptableLanguage<?>> {
@@ -18,12 +18,20 @@ public abstract class AdaptationContext<Lang extends TruffleAdaptableLanguage<?>
 
 	public AdaptationContext() {
 		tradeOff = new Goal("GlobalTradeOff");
+		resources = new ArrayList<Resource>();
+		for (Resource resource : createResources()) {
+			resources.add(resource);
+		}
+		tradeOffByModule = new ArrayList<Goal>();
 	}
 	
-	public final void registerModule(TruffleAdaptableModule<?, AdaptationContext<?>> module) {
+	final void registerModule(TruffleAdaptableModule<AdaptationContext<?>, ?> module) {
+		module.afterRegister();
+		System.err.println("REGISTER");
 		tradeOffByModule.add(module.getModuleTradeOff());
+		System.err.println("TRADE BY MODULE");
 		tradeOff.addContribution(module.getModuleTradeOff(), 1.0);
-		Lang.registerModule(module);
+		System.err.println("TRADE");
 	}
 	
 	final Map<String, Double> getUserConfig() {
@@ -34,7 +42,7 @@ public abstract class AdaptationContext<Lang extends TruffleAdaptableLanguage<?>
 		this.userConfig = userConfig;
 	}
 	
-	final List<Resource> getResources() {
+	public final List<Resource> getResources() {
 		return resources;
 	}
 	
@@ -50,6 +58,6 @@ public abstract class AdaptationContext<Lang extends TruffleAdaptableLanguage<?>
 	
 	public abstract String[] softgoalIDs();
 	
-	public abstract Resource[] resources();
+	protected abstract Resource[] createResources();
 
 }

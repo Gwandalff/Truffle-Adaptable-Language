@@ -4,16 +4,13 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.instrumentation.EventContext;
 import com.oracle.truffle.api.instrumentation.ExecutionEventListener;
 
-public class FeedbackLoopExecutor
-		<Lang extends TruffleAdaptableLanguage<?>, 
-		AdaptationCtx extends AdaptationContext<Lang>>
-	implements ExecutionEventListener {
+public class FeedbackLoopExecutor implements ExecutionEventListener {
 	
 	private AdaptationContext adaptationContext;
 	private FeedbackLoop loop;
 	
 	public FeedbackLoopExecutor(FeedbackLoop loop) {
-		adaptationContext = Lang.getAdaptationContext();
+		adaptationContext = loop.getAdaptationContext();
 		this.loop = loop;
 	}
 
@@ -22,10 +19,11 @@ public class FeedbackLoopExecutor
 		if (!loop.additionalFilter(context.getInstrumentedNode())) {
 			return;
 		}
-		Lang.monitor(adaptationContext);
-		Lang.analyze(adaptationContext);
-		Lang.plan   (adaptationContext);
-		Lang.execute(adaptationContext);
+		System.err.println("MAPE-K :");
+		TruffleAdaptableLanguage.monitor(adaptationContext);
+		TruffleAdaptableLanguage.analyze(adaptationContext);
+		TruffleAdaptableLanguage.plan   (adaptationContext);
+		TruffleAdaptableLanguage.execute(adaptationContext);
 	}
 
 	@Override

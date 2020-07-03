@@ -12,16 +12,16 @@ public final class Variable extends ModelingElement {
 
 	public Variable(String ID) {
 		super(ID);
-		this.lowerBound  = -100;
-		this.higherBound =  100;
+		this.lowerBound  = -1;
+		this.higherBound =  1;
 		this.equilibrium =  0;
 		this.globalImpact = 0;
 	}
 	
 	public Variable(String ID, double equilibrium) {
 		super(ID);
-		this.lowerBound  = -100;
-		this.higherBound =  100;
+		this.lowerBound  = -1;
+		this.higherBound =  1;
 		this.equilibrium =  equilibrium;
 		this.globalImpact = 0;
 	}
@@ -29,7 +29,7 @@ public final class Variable extends ModelingElement {
 	public Variable(String ID, double equilibrium, double lowerBound) {
 		super(ID);
 		this.lowerBound  = lowerBound;
-		this.higherBound = 100;
+		this.higherBound = 1;
 		this.equilibrium = equilibrium;
 		this.globalImpact = 0;
 	}

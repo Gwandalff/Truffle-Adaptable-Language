@@ -1,6 +1,5 @@
 package com.oracle.truffle.adaptable.language.decision.model;
 
-import java.util.HashMap;
 import java.util.Set;
 
 public class Goal extends ModelingElement {

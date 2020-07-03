@@ -43,7 +43,7 @@ public abstract class AdaptationListener implements ExecutionEventListener {
 	}
 	
 	final void setEnabled(boolean b) {
-		
+		enabled = b;
 	}
 	
 	public abstract void   before        (Node instrumentedNode);

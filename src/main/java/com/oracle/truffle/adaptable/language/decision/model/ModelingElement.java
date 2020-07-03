@@ -18,7 +18,7 @@ public abstract class ModelingElement {
 		this.ID = ID;
 	}
 	
-	final protected void clean() {
+	protected void clean() {
 		value = null;
 		inputLinks.keySet().forEach( (ModelingElement elem) -> {elem.clean();} );
 	}
@@ -48,6 +48,7 @@ public abstract class ModelingElement {
 				value += val * inputLinks.get(element);
 			}
 		}
+		System.err.println(ID + " : " + (computable?"computed -> ":"not computed -> ") + value);
 		if(!computable) value = null;
 		return value;
 	}

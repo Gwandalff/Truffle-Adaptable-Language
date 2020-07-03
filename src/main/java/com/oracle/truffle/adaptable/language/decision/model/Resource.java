@@ -13,6 +13,9 @@ public final class Resource extends ModelingElement {
 		value = val;
 	}
 	
+	final protected void clean() {
+	}
+	
 	@Override
 	protected Set<Variable> assessVariables(Double pathImpact) {
 		return new HashSet<Variable>();

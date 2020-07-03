@@ -6,23 +6,29 @@ import com.oracle.truffle.api.instrumentation.Tag;
 import com.oracle.truffle.api.instrumentation.TruffleInstrument;
 import com.oracle.truffle.api.nodes.Node;
 
-public abstract class FeedbackLoop
-		<Lang extends TruffleAdaptableLanguage<?>, 
-		AdaptationCtx extends AdaptationContext<Lang>> 
-	extends TruffleInstrument {
+
+public abstract class FeedbackLoop<Lang extends TruffleAdaptableLanguage<?>> extends TruffleInstrument {
 	
 	public static final String ID = "Feedback-Loop";
 	
-	//@Option(name = "enable", help = "Unused", category = OptionCategory.USER, stability = OptionStability.STABLE)
-    //static final OptionKey<Boolean> ENABLED = new OptionKey<Boolean>(false);
+	private AdaptationContext adaptationContext;
 
 	@Override
 	protected final void onCreate(Env env) {
-		System.out.println("Loop created");
+		System.err.println("Loop created");
+		adaptationContext = Lang.getAdaptationContext();
 		Instrumenter instrumenter = env.getInstrumenter();
 		SourceSectionFilter filter = SourceSectionFilter.newBuilder().tagIs(getFeedbackLoopTrigger()).build();
-		instrumenter.attachExecutionEventListener(filter, new FeedbackLoopExecutor<Lang,AdaptationCtx>(this));
+		instrumenter.attachExecutionEventListener(filter, new FeedbackLoopExecutor(this));
 		env.registerService(this);
+	}
+	
+	public final void start(Env env) {
+		this.onCreate(env);
+	}
+	
+	final AdaptationContext getAdaptationContext() {
+		return this.adaptationContext;
 	}
 	
 	protected abstract Class<? extends Tag> getFeedbackLoopTrigger();

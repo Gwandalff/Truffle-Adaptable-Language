@@ -3,6 +3,8 @@ package com.oracle.truffle.adaptable.module;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.graalvm.options.OptionValues;
+
 import com.oracle.truffle.adaptable.language.AdaptationContext;
 import com.oracle.truffle.adaptable.language.TruffleAdaptableLanguage;
 import com.oracle.truffle.adaptable.language.decision.model.Goal;
@@ -12,8 +14,8 @@ import com.oracle.truffle.api.instrumentation.SourceSectionFilter;
 import com.oracle.truffle.api.instrumentation.TruffleInstrument;
 
 public abstract class TruffleAdaptableModule
-	<Lang extends TruffleAdaptableLanguage<?>, 
-	AdaptationCtx extends AdaptationContext<Lang>> 
+	<AdaptationCtx extends AdaptationContext<?>,
+	Lang extends TruffleAdaptableLanguage<AdaptationCtx>> 
 		extends TruffleInstrument {
 	
 	private Env env;
@@ -22,26 +24,30 @@ public abstract class TruffleAdaptableModule
 	
 	@Override
 	final protected void onCreate(Env env) {
-		AdaptationCtx adaptationContext = (AdaptationCtx) Lang.getAdaptationContext();
 		this.env = env;
 		this.listeners = new ArrayList<AdaptationListener>();
 		this.moduleTradeOff = new Goal("Module Trade-Off");
-		adaptationContext.registerModule((TruffleAdaptableModule<?, AdaptationContext<?>>) this);
+		Lang.registerModule((TruffleAdaptableModule<AdaptationContext<?>, ?>) this);
 		
-		init(adaptationContext);
+		env.registerService(this);
+	}
+	
+	public void afterRegister() {
+		AdaptationCtx adaptationContext = (AdaptationCtx) Lang.getAdaptationContext();
 		
-		Resource[] resources = adaptationContext.resources();
-		for (int i = 0; i < resources.length; i++) {
-			connectResource(resources[i]);
+		init(adaptationContext, env.getOptions());
+		
+		List<Resource> resources = adaptationContext.getResources();
+		for (Resource resource : resources) {
+			connectResource(resource);
 		}
+		
 		String[] softgoalIDs = adaptationContext.softgoalIDs();
 		for (int i = 0; i < softgoalIDs.length; i++) {
 			Softgoal soft = new Softgoal(softgoalIDs[i]);
 			moduleTradeOff.addContribution(soft, 1.0 / softgoalIDs.length);
 			connectSoftGoal(soft);
 		}
-		
-		env.registerService(this);
 	}
 	
 	protected final void attachExecutionListener(SourceSectionFilter filter, AdaptationListener listener) {
@@ -53,13 +59,14 @@ public abstract class TruffleAdaptableModule
 		return moduleTradeOff;
 	}
 	
-	public abstract void init(AdaptationCtx adaptationContext);
+	public abstract void init(AdaptationCtx adaptationContext, OptionValues options);
 	
 	public abstract void connectSoftGoal(Softgoal softgoal);
 	
 	public abstract void connectResource(Resource resource);
 	
 	public void setEnabled(boolean b) {
+		System.err.println("SET ENABLED : " + b);
 		for (AdaptationListener adaptationListener : listeners) {
 			adaptationListener.setEnabled(b);
 		}
