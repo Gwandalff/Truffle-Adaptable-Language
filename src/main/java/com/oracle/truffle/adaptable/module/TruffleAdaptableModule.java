@@ -66,7 +66,6 @@ public abstract class TruffleAdaptableModule
 	public abstract void connectResource(Resource resource);
 	
 	public void setEnabled(boolean b) {
-		System.err.println("SET ENABLED : " + b);
 		for (AdaptationListener adaptationListener : listeners) {
 			adaptationListener.setEnabled(b);
 		}

@@ -27,11 +27,8 @@ public abstract class AdaptationContext<Lang extends TruffleAdaptableLanguage<?>
 	
 	final void registerModule(TruffleAdaptableModule<AdaptationContext<?>, ?> module) {
 		module.afterRegister();
-		System.err.println("REGISTER");
 		tradeOffByModule.add(module.getModuleTradeOff());
-		System.err.println("TRADE BY MODULE");
 		tradeOff.addContribution(module.getModuleTradeOff(), 1.0);
-		System.err.println("TRADE");
 	}
 	
 	final Map<String, Double> getUserConfig() {

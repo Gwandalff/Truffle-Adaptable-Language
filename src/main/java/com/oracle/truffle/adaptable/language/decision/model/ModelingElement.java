@@ -48,7 +48,6 @@ public abstract class ModelingElement {
 				value += val * inputLinks.get(element);
 			}
 		}
-		System.err.println(ID + " : " + (computable?"computed -> ":"not computed -> ") + value);
 		if(!computable) value = null;
 		return value;
 	}

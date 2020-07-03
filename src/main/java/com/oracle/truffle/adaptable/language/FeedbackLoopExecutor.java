@@ -19,7 +19,6 @@ public class FeedbackLoopExecutor implements ExecutionEventListener {
 		if (!loop.additionalFilter(context.getInstrumentedNode())) {
 			return;
 		}
-		System.err.println("MAPE-K :");
 		TruffleAdaptableLanguage.monitor(adaptationContext);
 		TruffleAdaptableLanguage.analyze(adaptationContext);
 		TruffleAdaptableLanguage.plan   (adaptationContext);

@@ -23,7 +23,6 @@ public abstract class TruffleAdaptableLanguage<AdaptationCtx extends AdaptationC
 	@Override
 	protected final AdaptationCtx createContext(Env env) {
 		AdaptationCtx adaptationCtx = createAdaptationContext();
-		System.err.println("CONTEXT CREATED");
 		adaptationContext = adaptationCtx;
 		env.lookup(env.getInstruments().get("Feedback-Loop"), getFeedbackLoopType());
 		for (TruffleAdaptableModule module : modules) {
@@ -37,7 +36,6 @@ public abstract class TruffleAdaptableLanguage<AdaptationCtx extends AdaptationC
 	}
 	
 	public final static void monitor(AdaptationContext<?> context) {
-		System.err.println("MONITOR");
 		context.setUserConfig(context.loadUserConfig());
 		List<Resource> resources = context.getResources();
 		for (Resource resource : resources) {
@@ -46,7 +44,6 @@ public abstract class TruffleAdaptableLanguage<AdaptationCtx extends AdaptationC
 	}
 	
 	public final static void analyze(AdaptationContext<?> context) {
-		System.err.println("ANALYZE");
 		Goal tradeOff = context.getGoal();
 		tradeOff.cleanModel();
 		Map<String, Double> userConfig = context.getUserConfig();
@@ -62,7 +59,6 @@ public abstract class TruffleAdaptableLanguage<AdaptationCtx extends AdaptationC
 	}
 	
 	public final static void plan   (AdaptationContext<?> context) {
-		System.err.println("PLAN");
 		activation = new ArrayList<>();
 		for (TruffleAdaptableModule<?, ?> module : modules) {
 				activation.add(module.getModuleTradeOff().execute());
@@ -70,14 +66,12 @@ public abstract class TruffleAdaptableLanguage<AdaptationCtx extends AdaptationC
 	}
 	
 	public final static void execute(AdaptationContext<?> context) {
-		System.err.println("EXECUTE");
 		for (int i = 0; i < modules.size(); i++) {
 			modules.get(i).setEnabled(activation.get(i));
 		}
 	}
 	
 	public final static void registerModule(TruffleAdaptableModule<AdaptationContext<?>, ?> module) {
-		System.err.println("REGISTER LANGUAGE");
 		modules.add(module);
 	}
 	

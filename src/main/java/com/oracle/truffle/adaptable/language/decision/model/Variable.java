@@ -67,7 +67,7 @@ public final class Variable extends ModelingElement {
 	
 	@Override
 	public void addContribution(ModelingElement elem, double impact){
-		System.out.println("WARNING : Add contribution to a variable is unnecessary");
+		System.err.println("WARNING : Add contribution to a variable is unnecessary");
 	}
 
 }

@@ -15,7 +15,6 @@ public abstract class FeedbackLoop<Lang extends TruffleAdaptableLanguage<?>> ext
 
 	@Override
 	protected final void onCreate(Env env) {
-		System.err.println("Loop created");
 		adaptationContext = Lang.getAdaptationContext();
 		Instrumenter instrumenter = env.getInstrumenter();
 		SourceSectionFilter filter = SourceSectionFilter.newBuilder().tagIs(getFeedbackLoopTrigger()).build();
