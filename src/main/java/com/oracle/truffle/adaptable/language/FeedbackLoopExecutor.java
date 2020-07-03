@@ -9,18 +9,23 @@ public class FeedbackLoopExecutor
 		AdaptationCtx extends AdaptationContext<Lang>>
 	implements ExecutionEventListener {
 	
-	private AdaptationCtx adaptationContext;
+	private AdaptationContext adaptationContext;
+	private FeedbackLoop loop;
 	
-	public FeedbackLoopExecutor() {
-		adaptationContext = Lang.<AdaptationCtx>getAdaptationContext();
+	public FeedbackLoopExecutor(FeedbackLoop loop) {
+		adaptationContext = Lang.getAdaptationContext();
+		this.loop = loop;
 	}
 
 	@Override
 	public void onEnter(EventContext context, VirtualFrame frame) {
-		Lang.<AdaptationCtx>monitor(adaptationContext);
-		Lang.<AdaptationCtx>analyze(adaptationContext);
-		Lang.<AdaptationCtx>plan   (adaptationContext);
-		Lang.<AdaptationCtx>execute(adaptationContext);
+		if (!loop.additionalFilter(context.getInstrumentedNode())) {
+			return;
+		}
+		Lang.monitor(adaptationContext);
+		Lang.analyze(adaptationContext);
+		Lang.plan   (adaptationContext);
+		Lang.execute(adaptationContext);
 	}
 
 	@Override

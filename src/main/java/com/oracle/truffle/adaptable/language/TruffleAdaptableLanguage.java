@@ -3,6 +3,7 @@ package com.oracle.truffle.adaptable.language;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.oracle.truffle.adaptable.language.decision.model.Goal;
 import com.oracle.truffle.adaptable.language.decision.model.Resource;
@@ -14,16 +15,14 @@ import com.oracle.truffle.api.instrumentation.Tag;
 public abstract class TruffleAdaptableLanguage<ExecutionContext> extends TruffleLanguage<ExecutionContext> {
 	
 	private static List<TruffleAdaptableModule> modules = new ArrayList<>();
+	private static List<Boolean> activation = new ArrayList<>();
 	
-	public static <AdaptationCtx extends AdaptationContext<?>> AdaptationCtx getAdaptationContext() {
+	public static AdaptationContext getAdaptationContext() {
+		System.err.println("This should not be called");
 		return null;
 	}
 	
-	public static Class<? extends Tag> getFeedbackLoopTrigger() {
-		return null;
-	}
-	
-	public static <AdaptationCtx extends AdaptationContext<?>> void monitor(AdaptationCtx context) {
+	public final static void monitor(AdaptationContext context) {
 		context.setUserConfig(context.loadUserConfig());
 		List<Resource> resources = context.getResources();
 		for (Resource resource : resources) {
@@ -31,32 +30,33 @@ public abstract class TruffleAdaptableLanguage<ExecutionContext> extends Truffle
 		}
 	}
 	
-	public static <AdaptationCtx extends AdaptationContext<?>> void analyze(AdaptationCtx context) {
+	public final static void analyze(AdaptationContext context) {
 		Goal tradeOff = context.getGoal();
 		tradeOff.cleanModel();
-		tradeOff.detach();
 		Map<String, Double> userConfig = context.getUserConfig();
-		List<Softgoal> softs = context.getSoftgoals();
-		for (Softgoal softgoal : softs) {
-			double impact = userConfig.getOrDefault(softgoal.ID, 0.0);
-			tradeOff.addContribution(softgoal, impact);
-		}
+		Set<String> IDS = userConfig.keySet();
+		
 		for (TruffleAdaptableModule module : modules) {
-			for (Softgoal softgoal : softs) {
-				module.connectSoftGoal(softgoal);
+			for (String id : IDS) {
+				module.getModuleTradeOff().updateLink(id, userConfig.get(id));
 			}
 		}
-		tradeOff.assessVariables();
-		for (Softgoal softgoal : softs) {
-			softgoal.detach();
+		
+		context.getGoal().assessVariables();
+	}
+	
+	public final static void plan   (AdaptationContext context) {
+		activation = new ArrayList<>();
+		for (TruffleAdaptableModule module : modules) {
+				activation.add(module.getModuleTradeOff().execute());
 		}
 	}
 	
-	public static <AdaptationCtx extends AdaptationContext<?>> void plan   (AdaptationCtx context) {
-		
+	public final static void execute(AdaptationContext context) {
+		for (int i = 0; i < modules.size(); i++) {
+			modules.get(i).setEnabled(activation.get(i));
+		}
 	}
-	
-	public static <AdaptationCtx extends AdaptationContext<?>> void execute(AdaptationCtx context) {}
 	
 	final static void registerModule(TruffleAdaptableModule<?, AdaptationContext<?>> module) {
 		modules.add(module);

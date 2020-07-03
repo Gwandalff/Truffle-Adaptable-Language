@@ -12,8 +12,8 @@ import com.oracle.truffle.adaptable.module.TruffleAdaptableModule;
 public abstract class AdaptationContext<Lang extends TruffleAdaptableLanguage<?>> {
 	
 	private Map<String, Double> userConfig;
-	private List<Softgoal> softgoals;
 	private List<Resource> resources;
+	private List<Goal> tradeOffByModule;
 	private Goal tradeOff;
 
 	public AdaptationContext() {
@@ -21,32 +21,34 @@ public abstract class AdaptationContext<Lang extends TruffleAdaptableLanguage<?>
 	}
 	
 	public final void registerModule(TruffleAdaptableModule<?, AdaptationContext<?>> module) {
+		tradeOffByModule.add(module.getModuleTradeOff());
+		tradeOff.addContribution(module.getModuleTradeOff(), 1.0);
 		Lang.registerModule(module);
 	}
 	
-	Map<String, Double> getUserConfig() {
+	final Map<String, Double> getUserConfig() {
 		return userConfig;
 	}
 
-	void setUserConfig(Map<String, Double> userConfig) {
+	final void setUserConfig(Map<String, Double> userConfig) {
 		this.userConfig = userConfig;
 	}
-
-	List<Softgoal> getSoftgoals() {
-		return softgoals;
-	}
 	
-	List<Resource> getResources() {
+	final List<Resource> getResources() {
 		return resources;
 	}
 	
-	Goal getGoal() {
+	final List<Goal> getTradeOffByModule() {
+		return tradeOffByModule;
+	}
+	
+	final Goal getGoal() {
 		return tradeOff;
 	}
 
 	public abstract Map<String, Double> loadUserConfig();
 	
-	public abstract Softgoal[] softgoals();
+	public abstract String[] softgoalIDs();
 	
 	public abstract Resource[] resources();
 
