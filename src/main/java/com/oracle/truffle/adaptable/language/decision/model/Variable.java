@@ -61,13 +61,16 @@ public final class Variable extends ModelingElement {
 		} else {
 			value = globalImpact > 0 ? higherBound : lowerBound;
 		}
-		
 		return value;
 	}
 	
 	@Override
 	public void addContribution(ModelingElement elem, double impact){
 		System.err.println("WARNING : Add contribution to a variable is unnecessary");
+	}
+	
+	public double value() {
+		return value;
 	}
 
 }
